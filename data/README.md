@@ -7,8 +7,9 @@
 
 1. Add or update source files in the project root or `data/`.
 2. Optionally refresh external predictors with `python fetch_external_predictors.py`.
-3. Run `python organize_data.py`.
-4. Train or evaluate models from `data/processed/snoqualmie_model_daily.csv`.
+3. Optionally backfill historical NDBC with `python fetch_ndbc_historical.py`.
+4. Run `python organize_data.py`.
+5. Train or evaluate models from `data/processed/snoqualmie_model_daily.csv`.
 
 ## Canonical Model Targets
 

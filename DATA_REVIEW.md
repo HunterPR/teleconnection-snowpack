@@ -28,6 +28,9 @@ Recent pipeline expansion:
 - Added external daily predictors from `fetch_external_predictors.py`:
   - `met_daily_features.csv` (Open-Meteo regional weather + freezing-line proxy)
   - `ndbc_multi_daily_features.csv` (multi-station NDBC recent marine context)
+- Added historical marine backfill from `fetch_ndbc_historical.py`:
+  - `ndbc_historical_daily_features.csv` (daily regional features from NDBC archives)
+  - `ndbc_historical_station_coverage.csv` (station/year download audit)
 
 ## Why This Structure
 

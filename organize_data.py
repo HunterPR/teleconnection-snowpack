@@ -238,8 +238,16 @@ def build_met_daily_features() -> pd.DataFrame:
 
 
 def build_ndbc_multi_daily_features() -> pd.DataFrame:
-    path = DATA_DIR / "ndbc_multi_daily_features.csv"
-    if not path.exists():
+    candidates = [
+        DATA_DIR / "ndbc_historical_daily_features.csv",
+        DATA_DIR / "ndbc_multi_daily_features.csv",
+    ]
+    path = None
+    for p in candidates:
+        if p.exists():
+            path = p
+            break
+    if path is None:
         return pd.DataFrame(columns=["date"])
     df = pd.read_csv(path, low_memory=False)
     if "date" not in df.columns:
