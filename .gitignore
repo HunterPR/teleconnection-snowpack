@@ -5,6 +5,8 @@ __pycache__/
 
 # Large/generated data artifacts
 *.csv
+*.xlsx
+*.xls
 *.parquet
 data/processed/
 plots/
