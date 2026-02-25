@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Large/generated data artifacts
+*.csv
+*.parquet
+data/processed/
+plots/
+
+# IDE local settings
+.vscode/
