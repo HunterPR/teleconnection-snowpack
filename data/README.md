@@ -6,8 +6,9 @@
 ## Workflow
 
 1. Add or update source files in the project root or `data/`.
-2. Run `python organize_data.py`.
-3. Train or evaluate models from `data/processed/snoqualmie_model_daily.csv`.
+2. Optionally refresh external predictors with `python fetch_external_predictors.py`.
+3. Run `python organize_data.py`.
+4. Train or evaluate models from `data/processed/snoqualmie_model_daily.csv`.
 
 ## Canonical Model Targets
 
@@ -21,6 +22,8 @@
 - Extended teleconnections from local PSL files: `qbo`, `np`, `pmm`, `wp`, `solar`
 - Nearby station context: monthly SNOTEL features from Stampede, Olallie, and Tinkham
 - Marine context: daily buoy aggregates
+- Additional near-term marine context: `ndbc_multi_daily_features.csv`
+- RWIS-style local met proxy: `met_daily_features.csv` (includes estimated freezing level / gap)
 - Hydrologic context: monthly USGS/BOR streamflow features
 
 ## Notes

@@ -4,6 +4,8 @@ Organize and standardize datasets for Snoqualmie Pass forecasting.
 This script does not delete or overwrite source files. It creates:
   - data/processed/snoqualmie_daily_targets.csv
   - data/processed/buoy_daily_features.csv
+  - data/processed/met_daily_features.csv
+  - data/processed/ndbc_multi_daily_features.csv
   - data/processed/teleconnection_monthly_features.csv
   - data/processed/nearby_snotel_monthly_features.csv
   - data/processed/streamflow_monthly_features.csv
@@ -222,6 +224,32 @@ def build_buoy_daily_features(source: Path) -> pd.DataFrame:
     return daily
 
 
+def build_met_daily_features() -> pd.DataFrame:
+    path = DATA_DIR / "met_daily_features.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=["date"])
+    df = pd.read_csv(path, low_memory=False)
+    if "date" not in df.columns:
+        return pd.DataFrame(columns=["date"])
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df[df["date"].notna()].copy()
+    df = df.sort_values("date").reset_index(drop=True)
+    return df
+
+
+def build_ndbc_multi_daily_features() -> pd.DataFrame:
+    path = DATA_DIR / "ndbc_multi_daily_features.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=["date"])
+    df = pd.read_csv(path, low_memory=False)
+    if "date" not in df.columns:
+        return pd.DataFrame(columns=["date"])
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df[df["date"].notna()].copy()
+    df = df.sort_values("date").reset_index(drop=True)
+    return df
+
+
 def season_to_month(season: str) -> int:
     season = (season or "").strip().upper()
     mapping = {
@@ -375,12 +403,18 @@ def build_nearby_snotel_monthly_features() -> pd.DataFrame:
 def build_model_daily(
     daily_targets: pd.DataFrame,
     buoy_daily: pd.DataFrame,
+    met_daily: pd.DataFrame,
+    ndbc_daily: pd.DataFrame,
     tele_monthly: pd.DataFrame,
     stream_monthly: pd.DataFrame,
     snotel_monthly: pd.DataFrame,
 ) -> pd.DataFrame:
     model = daily_targets.copy()
     model = model.merge(buoy_daily, on="date", how="left")
+    if not met_daily.empty:
+        model = model.merge(met_daily, on="date", how="left")
+    if not ndbc_daily.empty:
+        model = model.merge(ndbc_daily, on="date", how="left")
     model["year"] = model["date"].dt.year
     model["month"] = model["date"].dt.month
     if not tele_monthly.empty:
@@ -407,14 +441,26 @@ def main() -> None:
 
     daily_targets = build_snoqualmie_daily_targets(sno_source)
     buoy_daily = build_buoy_daily_features(buoy_source)
+    met_daily = build_met_daily_features()
+    ndbc_daily = build_ndbc_multi_daily_features()
     tele_monthly = build_teleconnection_monthly_features()
     snotel_monthly = build_nearby_snotel_monthly_features()
     stream_monthly = build_streamflow_monthly_features()
-    model_daily = build_model_daily(daily_targets, buoy_daily, tele_monthly, stream_monthly, snotel_monthly)
+    model_daily = build_model_daily(
+        daily_targets,
+        buoy_daily,
+        met_daily,
+        ndbc_daily,
+        tele_monthly,
+        stream_monthly,
+        snotel_monthly,
+    )
 
     outputs = {
         "snoqualmie_daily_targets.csv": daily_targets,
         "buoy_daily_features.csv": buoy_daily,
+        "met_daily_features.csv": met_daily,
+        "ndbc_multi_daily_features.csv": ndbc_daily,
         "teleconnection_monthly_features.csv": tele_monthly,
         "nearby_snotel_monthly_features.csv": snotel_monthly,
         "streamflow_monthly_features.csv": stream_monthly,
@@ -431,6 +477,8 @@ def main() -> None:
         {"layer": "source", "name": "buoy_source", "path": str(buoy_source.relative_to(ROOT)), "rows": str(len(pd.read_csv(buoy_source, low_memory=False)))},
         {"layer": "output", "name": "daily_targets", "path": "data/processed/snoqualmie_daily_targets.csv", "rows": str(len(daily_targets))},
         {"layer": "output", "name": "buoy_daily_features", "path": "data/processed/buoy_daily_features.csv", "rows": str(len(buoy_daily))},
+        {"layer": "output", "name": "met_daily_features", "path": "data/processed/met_daily_features.csv", "rows": str(len(met_daily))},
+        {"layer": "output", "name": "ndbc_multi_daily_features", "path": "data/processed/ndbc_multi_daily_features.csv", "rows": str(len(ndbc_daily))},
         {"layer": "output", "name": "teleconnection_monthly_features", "path": "data/processed/teleconnection_monthly_features.csv", "rows": str(len(tele_monthly))},
         {"layer": "output", "name": "nearby_snotel_monthly_features", "path": "data/processed/nearby_snotel_monthly_features.csv", "rows": str(len(snotel_monthly))},
         {"layer": "output", "name": "streamflow_monthly_features", "path": "data/processed/streamflow_monthly_features.csv", "rows": str(len(stream_monthly))},

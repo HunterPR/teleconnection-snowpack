@@ -25,6 +25,9 @@ Recent pipeline expansion:
 
 - Added extended teleconnections from local PSL transforms (`qbo`, `np`, `pmm`, `wp`, `solar`).
 - Added nearby monthly SNOTEL predictors (`stampede_*`, `olallie_*`, `tinkham_*`).
+- Added external daily predictors from `fetch_external_predictors.py`:
+  - `met_daily_features.csv` (Open-Meteo regional weather + freezing-line proxy)
+  - `ndbc_multi_daily_features.csv` (multi-station NDBC recent marine context)
 
 ## Why This Structure
 
