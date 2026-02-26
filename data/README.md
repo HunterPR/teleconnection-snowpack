@@ -8,8 +8,12 @@
 1. Add or update source files in the project root or `data/`.
 2. Optionally refresh external predictors with `python fetch_external_predictors.py`.
 3. Optionally backfill historical NDBC with `python fetch_ndbc_historical.py`.
-4. Run `python organize_data.py`.
-5. Train or evaluate models from `data/processed/snoqualmie_model_daily.csv`.
+4. Optionally fetch synoptic history/forecast with `python fetch_synoptic_features.py`.
+5. Optionally fetch WSDOT RWIS with `python fetch_rwis_wsdot.py` (requires `WSDOT_ACCESS_CODE`).
+6. Run `python organize_data.py`.
+7. Run forecast tools:
+   - `python snowfall_tool.py` (next-day estimate)
+   - `python forecast_chunks_tool.py` (14-day + 30-day chunk forecast)
 
 ## Canonical Model Targets
 

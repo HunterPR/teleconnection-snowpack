@@ -6,6 +6,8 @@ This script does not delete or overwrite source files. It creates:
   - data/processed/buoy_daily_features.csv
   - data/processed/met_daily_features.csv
   - data/processed/ndbc_multi_daily_features.csv
+  - data/processed/rwis_daily_features.csv
+  - data/processed/synoptic_daily_features.csv
   - data/processed/teleconnection_monthly_features.csv
   - data/processed/nearby_snotel_monthly_features.csv
   - data/processed/streamflow_monthly_features.csv
@@ -54,6 +56,15 @@ def to_numeric(df: pd.DataFrame, columns: Iterable[str]) -> None:
     for col in columns:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+
+def normalize_date_series(s: pd.Series) -> pd.Series:
+    out = pd.to_datetime(s, errors="coerce", utc=True)
+    try:
+        out = out.dt.tz_convert(None)
+    except Exception:
+        pass
+    return out.dt.floor("D")
 
 
 def load_wide_monthly(path: Path, value_name: str, year_col: str = "year") -> pd.DataFrame:
@@ -231,7 +242,7 @@ def build_met_daily_features() -> pd.DataFrame:
     df = pd.read_csv(path, low_memory=False)
     if "date" not in df.columns:
         return pd.DataFrame(columns=["date"])
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = normalize_date_series(df["date"])
     df = df[df["date"].notna()].copy()
     df = df.sort_values("date").reset_index(drop=True)
     return df
@@ -252,7 +263,33 @@ def build_ndbc_multi_daily_features() -> pd.DataFrame:
     df = pd.read_csv(path, low_memory=False)
     if "date" not in df.columns:
         return pd.DataFrame(columns=["date"])
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = normalize_date_series(df["date"])
+    df = df[df["date"].notna()].copy()
+    df = df.sort_values("date").reset_index(drop=True)
+    return df
+
+
+def build_rwis_daily_features() -> pd.DataFrame:
+    path = DATA_DIR / "rwis_daily_features.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=["date"])
+    df = pd.read_csv(path, low_memory=False)
+    if "date" not in df.columns:
+        return pd.DataFrame(columns=["date"])
+    df["date"] = normalize_date_series(df["date"])
+    df = df[df["date"].notna()].copy()
+    df = df.sort_values("date").reset_index(drop=True)
+    return df
+
+
+def build_synoptic_daily_features() -> pd.DataFrame:
+    path = DATA_DIR / "synoptic_daily_features.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=["date"])
+    df = pd.read_csv(path, low_memory=False)
+    if "date" not in df.columns:
+        return pd.DataFrame(columns=["date"])
+    df["date"] = normalize_date_series(df["date"])
     df = df[df["date"].notna()].copy()
     df = df.sort_values("date").reset_index(drop=True)
     return df
@@ -413,6 +450,8 @@ def build_model_daily(
     buoy_daily: pd.DataFrame,
     met_daily: pd.DataFrame,
     ndbc_daily: pd.DataFrame,
+    rwis_daily: pd.DataFrame,
+    synoptic_daily: pd.DataFrame,
     tele_monthly: pd.DataFrame,
     stream_monthly: pd.DataFrame,
     snotel_monthly: pd.DataFrame,
@@ -423,6 +462,10 @@ def build_model_daily(
         model = model.merge(met_daily, on="date", how="left")
     if not ndbc_daily.empty:
         model = model.merge(ndbc_daily, on="date", how="left")
+    if not rwis_daily.empty:
+        model = model.merge(rwis_daily, on="date", how="left")
+    if not synoptic_daily.empty:
+        model = model.merge(synoptic_daily, on="date", how="left")
     model["year"] = model["date"].dt.year
     model["month"] = model["date"].dt.month
     if not tele_monthly.empty:
@@ -451,6 +494,8 @@ def main() -> None:
     buoy_daily = build_buoy_daily_features(buoy_source)
     met_daily = build_met_daily_features()
     ndbc_daily = build_ndbc_multi_daily_features()
+    rwis_daily = build_rwis_daily_features()
+    synoptic_daily = build_synoptic_daily_features()
     tele_monthly = build_teleconnection_monthly_features()
     snotel_monthly = build_nearby_snotel_monthly_features()
     stream_monthly = build_streamflow_monthly_features()
@@ -459,6 +504,8 @@ def main() -> None:
         buoy_daily,
         met_daily,
         ndbc_daily,
+        rwis_daily,
+        synoptic_daily,
         tele_monthly,
         stream_monthly,
         snotel_monthly,
@@ -469,6 +516,8 @@ def main() -> None:
         "buoy_daily_features.csv": buoy_daily,
         "met_daily_features.csv": met_daily,
         "ndbc_multi_daily_features.csv": ndbc_daily,
+        "rwis_daily_features.csv": rwis_daily,
+        "synoptic_daily_features.csv": synoptic_daily,
         "teleconnection_monthly_features.csv": tele_monthly,
         "nearby_snotel_monthly_features.csv": snotel_monthly,
         "streamflow_monthly_features.csv": stream_monthly,
@@ -487,6 +536,8 @@ def main() -> None:
         {"layer": "output", "name": "buoy_daily_features", "path": "data/processed/buoy_daily_features.csv", "rows": str(len(buoy_daily))},
         {"layer": "output", "name": "met_daily_features", "path": "data/processed/met_daily_features.csv", "rows": str(len(met_daily))},
         {"layer": "output", "name": "ndbc_multi_daily_features", "path": "data/processed/ndbc_multi_daily_features.csv", "rows": str(len(ndbc_daily))},
+        {"layer": "output", "name": "rwis_daily_features", "path": "data/processed/rwis_daily_features.csv", "rows": str(len(rwis_daily))},
+        {"layer": "output", "name": "synoptic_daily_features", "path": "data/processed/synoptic_daily_features.csv", "rows": str(len(synoptic_daily))},
         {"layer": "output", "name": "teleconnection_monthly_features", "path": "data/processed/teleconnection_monthly_features.csv", "rows": str(len(tele_monthly))},
         {"layer": "output", "name": "nearby_snotel_monthly_features", "path": "data/processed/nearby_snotel_monthly_features.csv", "rows": str(len(snotel_monthly))},
         {"layer": "output", "name": "streamflow_monthly_features", "path": "data/processed/streamflow_monthly_features.csv", "rows": str(len(stream_monthly))},
