@@ -1,9 +1,9 @@
 {
-  "bottom_line": "Winter 2026 outlook at Snoqualmie Pass:  Current teleconnection pattern is La Ni\u00f1a-like. PDO is -0.92. EPO is +1.36. Model ensemble suggests seasonal totals on the order of 67.7\" SWE and 148.4\" snowfall for the forecast window, driven by the current teleconnection state and lagged predictors. Forecast sits below the historical distribution (low percentile). MJO: sectors 6 (120\u00b0W) and 7 (40\u00b0W) show meaningful influence on Sno Pass; current index6 -0.30; index7 -0.30. Analog years that match the current pattern include [2006, 2021, 1985, 1996, 1955]\u2014use those winters for context and experience-based adjustment. Freezing level currently at 5512' ASL (snow level ~6582'). 8 snowfall hours expected in the next 48h (74 over 120h). 850 hPa flow from 267 deg at 28 mph -> Pacific moisture fetch (favorable for orographic snow).",
+  "bottom_line": "Winter 2026 outlook at Snoqualmie Pass:  Current teleconnection pattern is La Ni\u00f1a-like. PDO is -0.92. EPO is +1.36. Model ensemble suggests seasonal totals on the order of 93.4\" SWE and 148.4\" snowfall for the forecast window, driven by the current teleconnection state and lagged predictors. Forecast is near the middle of the historical distribution. MJO: sectors 6 (120\u00b0W) and 7 (40\u00b0W) show meaningful influence on Sno Pass; current index6 -0.30; index7 -0.30. Analog years that match the current pattern include [2006, 2021, 1985, 1996, 1955]\u2014use those winters for context and experience-based adjustment. Freezing level currently at 5512' ASL (snow level ~6582'). 8 snowfall hours expected in the next 48h (74 over 120h). 850 hPa flow from 267 deg at 28 mph -> Pacific moisture fetch (favorable for orographic snow).",
   "human_notes": "",
   "context": {
     "target_year": 2026,
-    "generated_at": "2026-03-09T02:11:09.077853Z",
+    "generated_at": "2026-03-09T13:46:05.809644Z",
     "forecast_months": [
       {
         "month": "Feb",
@@ -16,24 +16,24 @@
       },
       {
         "month": "Mar",
-        "wteq_ensemble": 24.72,
+        "wteq_ensemble": 32.82,
         "snow_ensemble": 61.67,
-        "wteq_pct": 25.8,
+        "wteq_pct": 35.5,
         "snow_pct": 56.6,
         "wteq_hist_mean": 38.29,
         "snow_hist_mean": 62.4
       },
       {
         "month": "Apr",
-        "wteq_ensemble": 21.47,
+        "wteq_ensemble": 39.06,
         "snow_ensemble": 43.44,
-        "wteq_pct": 6.5,
+        "wteq_pct": 35.5,
         "snow_pct": 80.3,
         "wteq_hist_mean": 49.35,
         "snow_hist_mean": 26.14
       }
     ],
-    "wteq_season_total": 67.7,
+    "wteq_season_total": 93.4,
     "snow_season_total": 148.4,
     "analog_years": [
       2006,
@@ -95,5 +95,5 @@
       "pattern": "rising"
     }
   },
-  "generated_at": "2026-03-09T02:11:09.077853Z"
+  "generated_at": "2026-03-09T13:46:05.809644Z"
 }

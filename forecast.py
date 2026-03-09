@@ -100,6 +100,61 @@ MONTH_NAMES = {1:"Jan",2:"Feb",3:"Mar",4:"Apr",5:"May",6:"Jun",
 # Blend snowfall forecast with climatology to reduce variance (experimental). 0 = model only, 0.5 = half climatology.
 SNOW_CLIM_BLEND = 0.35
 
+# Blend WTEQ forecast with climatology.  Best tune_backtest config:
+#   Ridge+GBR | all features | clim=60% -> skill=+1.8%, corr=0.863
+# Set to 0.0 to disable; loaded from tune_backtest_results.csv if available.
+WTEQ_CLIM_BLEND = 0.60
+
+# Preferred WTEQ model subset from tuning (None = full ensemble)
+WTEQ_MODEL_SUBSET = ["Ridge", "GBR"]
+
+def _apply_tune_config():
+    """Load best tune_backtest config and update module-level WTEQ_CLIM_BLEND / WTEQ_MODEL_SUBSET."""
+    global WTEQ_CLIM_BLEND, WTEQ_MODEL_SUBSET
+    path = os.path.join(DATA, "tune_backtest_results.csv")
+    if not os.path.exists(path):
+        return
+    try:
+        rdf = pd.read_csv(path)
+        if rdf.empty or "skill" not in rdf.columns:
+            return
+        rdf = rdf.sort_values("skill", ascending=False).reset_index(drop=True)
+        row = rdf.iloc[0]
+        label = str(row.get("label", ""))
+        skill = row.get("skill", 0)
+
+        # Parse from dedicated columns if present, else parse label
+        if "clim_blend" in rdf.columns and pd.notna(row.get("clim_blend")):
+            WTEQ_CLIM_BLEND = float(row["clim_blend"])
+        else:
+            # Parse "clim=60%" from label
+            import re
+            m = re.search(r"clim=(\d+)%", label)
+            if m:
+                WTEQ_CLIM_BLEND = int(m.group(1)) / 100.0
+
+        if "model_names" in rdf.columns and pd.notna(row.get("model_names")):
+            mn_str = str(row["model_names"])
+            if mn_str != "ensemble":
+                WTEQ_MODEL_SUBSET = [s.strip() for s in mn_str.split("|") if s.strip()]
+            else:
+                WTEQ_MODEL_SUBSET = None
+        else:
+            # Parse model names from label (before first " | ")
+            parts = label.split(" | ")
+            if parts:
+                model_str = parts[0].split("(")[0].strip()  # strip alpha param
+                if model_str == "ensemble":
+                    WTEQ_MODEL_SUBSET = None
+                else:
+                    WTEQ_MODEL_SUBSET = [s.strip() for s in model_str.split("+") if s.strip()]
+
+        print(f"   [tune] Best config: models={'+'.join(WTEQ_MODEL_SUBSET) if WTEQ_MODEL_SUBSET else 'ensemble'}, "
+              f"clim_blend={WTEQ_CLIM_BLEND:.0%} (skill={skill:.1%})")
+    except Exception:
+        pass  # fall back to hardcoded defaults
+
+
 # Teleconnection subsets used by tune_backtest (for loading best config)
 TUNE_TELE_SUBSETS = {
     "core4":  ["ao", "roni", "pdo", "pna"],
@@ -964,7 +1019,10 @@ def forecast_season(df, models_wteq, models_snow=None, target_year=2026):
     """Forecast SWE (WTEQ) and snowfall for remaining winter months.
     Snowfall is blended with climatology (SNOW_CLIM_BLEND) to reduce variance.
     Layer 2 station telemetry blending adjusts current-month forecasts with actual pace."""
+    subset_label = "+".join(WTEQ_MODEL_SUBSET) if WTEQ_MODEL_SUBSET else "full ensemble"
+    blend_label = f"{WTEQ_CLIM_BLEND:.0%} clim" if WTEQ_CLIM_BLEND > 0 else "no blend"
     print(f"\n[6] Forecasting {target_year-1}/{target_year} winter season ...")
+    print(f"    WTEQ: {subset_label}, {blend_label}")
     tele_cols = [c for c in CORE_TELE if c in df.columns]
     feat_wteq = models_wteq["features"]
     feat_snow = (models_snow or {}).get("features") or []
@@ -1021,10 +1079,28 @@ def forecast_season(df, models_wteq, models_snow=None, target_year=2026):
         X_arr = row_w.values
         model_names_w = [k for k in models_wteq if isinstance(models_wteq[k], Pipeline)]
         preds_all_w = {n: models_wteq[n].predict(X_arr)[0] for n in model_names_w}
-        weights_w = models_wteq.get("weights", {})
-        p_ens_w = sum(preds_all_w[n] * weights_w.get(n, 0) for n in preds_all_w) if weights_w else np.mean(list(preds_all_w.values()))
-        p_spread_w = float(np.std(list(preds_all_w.values()))) if len(preds_all_w) > 1 else 0.0
+
+        # Use tuned model subset (WTEQ_MODEL_SUBSET) if available, else full ensemble
+        subset_w = WTEQ_MODEL_SUBSET
+        if subset_w:
+            avail = [n for n in subset_w if n in preds_all_w]
+            if avail:
+                p_ens_w = np.mean([preds_all_w[n] for n in avail])
+            else:
+                weights_w = models_wteq.get("weights", {})
+                p_ens_w = sum(preds_all_w[n] * weights_w.get(n, 0) for n in preds_all_w) if weights_w else np.mean(list(preds_all_w.values()))
+        else:
+            weights_w = models_wteq.get("weights", {})
+            p_ens_w = sum(preds_all_w[n] * weights_w.get(n, 0) for n in preds_all_w) if weights_w else np.mean(list(preds_all_w.values()))
+
+        # Apply WTEQ climatology blend (from tune_backtest best config)
         hist_w = df[(df["month"] == month) & df["WTEQ"].notna()]["WTEQ"]
+        if WTEQ_CLIM_BLEND > 0:
+            clim_w = float(hist_w.mean()) if len(hist_w) > 0 else p_ens_w
+            p_ens_w_raw = p_ens_w
+            p_ens_w = (1.0 - WTEQ_CLIM_BLEND) * p_ens_w + WTEQ_CLIM_BLEND * clim_w
+
+        p_spread_w = float(np.std(list(preds_all_w.values()))) if len(preds_all_w) > 1 else 0.0
         pct_w = (hist_w < p_ens_w).mean() * 100
 
         rec = {
@@ -1698,6 +1774,9 @@ def main():
         print("  Saved data/backtest_WTEQ.csv" + (" , data/backtest_snow_inches.csv" if bt_snow is not None else ""))
         return
 
+    # --- Load best tune config (updates WTEQ_CLIM_BLEND & WTEQ_MODEL_SUBSET) ---
+    _apply_tune_config()
+
     # --- Train models (SWE primary; snowfall secondary with climatology blend) ---
     tele_cols = [c for c in CORE_TELE if c in df.columns]
     models_wteq = train_models(df, "WTEQ", months=WINTER_MONTHS)
@@ -1733,7 +1812,8 @@ def main():
     print("="*60)
     for _, r in fc_df.iterrows():
         print(f"\n  {r['month_name']} 2026:")
-        print(f"    SWE:       {r.get('wteq_ensemble','?'):.1f}\" "
+        wteq_blend_str = f" (blend {1-WTEQ_CLIM_BLEND:.0%} model / {WTEQ_CLIM_BLEND:.0%} clim)" if WTEQ_CLIM_BLEND > 0 else ""
+        print(f"    SWE:       {r.get('wteq_ensemble','?'):.1f}\"{wteq_blend_str} "
               f"(hist mean {r.get('wteq_hist_mean','?'):.1f}\" +/- {r.get('wteq_hist_std','?'):.1f}\")  "
               f"-> {r.get('wteq_pct','?'):.0f}th percentile")
         if "snow_ensemble" in r:
