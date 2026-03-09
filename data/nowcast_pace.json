@@ -1,0 +1,40 @@
+{
+  "2": {
+    "year": 2026,
+    "month": 2,
+    "days_elapsed": 26,
+    "days_in_month": 28,
+    "actual_snowfall_in": 38.9,
+    "pace_snowfall_in": 41.9,
+    "actual_precip_in": 5.23,
+    "swe_gain_est_in": 5.23,
+    "depth_start_in": 26.1,
+    "depth_latest_in": 33.2,
+    "station": "ALP31"
+  },
+  "sounding": {
+    "freezing_level_forecast": {
+      "current_ft": 5512,
+      "min_48h_ft": 2034,
+      "max_48h_ft": 10007,
+      "mean_48h_ft": 6360,
+      "min_120h_ft": 295,
+      "max_120h_ft": 10007
+    },
+    "snow_level_ft": 6582,
+    "snowfall_possible_hours": {
+      "next_48h": 8,
+      "next_120h": 74
+    },
+    "snowmaking_windows": {
+      "good_hours_48h": 0,
+      "marginal_hours_48h": 1,
+      "current_wetbulb_f": 37.2
+    },
+    "wind_850hPa_48h": {
+      "mean_dir_deg": 267,
+      "mean_speed_kph": 45,
+      "mean_speed_mph": 28
+    }
+  }
+}

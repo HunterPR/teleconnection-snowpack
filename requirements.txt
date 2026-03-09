@@ -2,5 +2,17 @@ requests
 pandas
 numpy
 scikit-learn
+xgboost
 matplotlib
 seaborn
+streamlit
+plotly
+scipy
+joblib
+pyarrow
+python-dotenv
+# Optional: for natural-language bottom line LLM (when OPENAI_API_KEY or ANTHROPIC_API_KEY set)
+openai
+anthropic
+# Optional: for fetch_new_predictors z500 NE Pacific (NCEP/NCAR reanalysis)
+netCDF4

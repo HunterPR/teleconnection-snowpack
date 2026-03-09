@@ -9,7 +9,10 @@ __pycache__/
 *.xls
 *.parquet
 data/processed/
+data/pipeline/
 plots/
+models/
+*.pkl
 
 # IDE local settings
 .vscode/

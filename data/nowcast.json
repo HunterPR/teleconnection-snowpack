@@ -1,0 +1,97 @@
+{
+  "timestamp": "2026-03-07T03:09:11.267433+00:00",
+  "year": 2026,
+  "month": 3,
+  "pace": {
+    "error": "No data for 2026-03"
+  },
+  "freezing_level": {
+    "current_ft": 2778,
+    "avg_48h_ft": 2975,
+    "inversions_48h": 0,
+    "lapse_rate_avg": -3.1
+  },
+  "pressure": {
+    "slp_hpa": 1025.8,
+    "change_12h": 2.7,
+    "change_24h": 6.3,
+    "pattern": "rising"
+  },
+  "sounding": {
+    "freezing_level_forecast": {
+      "current_ft": 5512,
+      "min_48h_ft": 2034,
+      "max_48h_ft": 10007,
+      "mean_48h_ft": 6360,
+      "min_120h_ft": 295,
+      "max_120h_ft": 10007
+    },
+    "vertical_profile": [
+      {
+        "level_hPa": 500,
+        "altitude_ft": 18760,
+        "temp_f": 5.1,
+        "wetbulb_f": 3.1,
+        "dewpoint_f": -0.5,
+        "rh_pct": 77.0,
+        "wind_kph": 103.0,
+        "wind_dir": 344.0
+      },
+      {
+        "level_hPa": 700,
+        "altitude_ft": 10172,
+        "temp_f": 28.0,
+        "wetbulb_f": 27.0,
+        "dewpoint_f": 26.5,
+        "rh_pct": 95.0,
+        "wind_kph": 78.0,
+        "wind_dir": 318.0
+      },
+      {
+        "level_hPa": 850,
+        "altitude_ft": 5074,
+        "temp_f": 34.5,
+        "wetbulb_f": 34.1,
+        "dewpoint_f": 34.4,
+        "rh_pct": 100.0,
+        "wind_kph": 46.0,
+        "wind_dir": 263.0
+      },
+      {
+        "level_hPa": 925,
+        "altitude_ft": 2826,
+        "temp_f": 41.1,
+        "wetbulb_f": 40.5,
+        "dewpoint_f": 40.4,
+        "rh_pct": 98.0,
+        "wind_kph": 9.0,
+        "wind_dir": 260.0
+      },
+      {
+        "level_hPa": 1000,
+        "altitude_ft": 692,
+        "temp_f": 48.6,
+        "wetbulb_f": 48.0,
+        "dewpoint_f": 47.9,
+        "rh_pct": 97.0,
+        "wind_kph": 7.0,
+        "wind_dir": 271.0
+      }
+    ],
+    "snow_level_ft": 6582,
+    "snowfall_possible_hours": {
+      "next_48h": 8,
+      "next_120h": 74
+    },
+    "snowmaking_windows": {
+      "good_hours_48h": 0,
+      "marginal_hours_48h": 1,
+      "current_wetbulb_f": 37.2
+    },
+    "wind_850hPa_48h": {
+      "mean_dir_deg": 267,
+      "mean_speed_kph": 45,
+      "mean_speed_mph": 28
+    }
+  }
+}

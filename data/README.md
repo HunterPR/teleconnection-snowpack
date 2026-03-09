@@ -5,15 +5,14 @@
 
 ## Workflow
 
-1. Add or update source files in the project root or `data/`.
-2. Optionally refresh external predictors with `python fetch_external_predictors.py`.
-3. Optionally backfill historical NDBC with `python fetch_ndbc_historical.py`.
-4. Optionally fetch synoptic history/forecast with `python fetch_synoptic_features.py`.
-5. Optionally fetch WSDOT RWIS with `python fetch_rwis_wsdot.py` (requires `WSDOT_ACCESS_CODE`).
-6. Run `python organize_data.py`.
-7. Run forecast tools:
-   - `python snowfall_tool.py` (next-day estimate)
-   - `python forecast_chunks_tool.py` (14-day + 30-day chunk forecast)
+1. **Teleconnection & snowpack**: `python fetch_data.py` (ONI, PDO, PNA, AO, NAO, MJO, Snoqualmie SNOTEL).
+2. **Extended predictors** (optional): `python fetch_new_predictors.py` (EPO, Nino4, Z500, AMO, Stampede Pass SNOTEL).
+3. **Custom DOT/ALP stations**: Drop CSVs (`sno38.csv`, `alp31.csv`, `alp43.csv`, etc.) into `data/custom_sources/`, then run `python organize_data.py`. See `data/custom_sources/README.md`.
+4. **Merged dataset**: `python build_merged_dataset.py` builds `Merged_Dataset.csv` from data/ so `forecast.py` can run.
+5. **Forecast**: `python forecast.py` trains models, writes `data/forecast_results.csv`, `data/analog_years.csv`, `models/`, `plots/`.
+6. **Dashboard**: `streamlit run dashboard.py`; use **Refresh data** in the sidebar after re-running forecast.
+
+For one-command refresh (if you have all sources): `python run_all_pipeline.py` (if present).
 
 ## Canonical Model Targets
 
@@ -27,11 +26,15 @@
 - Extended teleconnections from local PSL files: `qbo`, `np`, `pmm`, `wp`, `solar`
 - Nearby station context: monthly SNOTEL features from Stampede, Olallie, and Tinkham
 - Marine context: daily buoy aggregates
+- Marine lead/lag context: engineered buoy lag + rolling features in `snoqualmie_model_daily.csv`
 - Additional near-term marine context: `ndbc_multi_daily_features.csv`
 - RWIS-style local met proxy: `met_daily_features.csv` (includes estimated freezing level / gap)
 - Hydrologic context: monthly USGS/BOR streamflow features
+- Operational weather windows: daily snowmaking/snowfall-condition hour metrics
 
 ## Notes
 
+- See **STORAGE.md** in the repo root for what can be deleted and how to regenerate it.
 - `target_snowfall_24h_in` is derived from positive day-over-day change in daily max snow depth, with extreme spikes filtered.
 - `raw_snow_interval_24h_in` is retained for audit but should not be the default target.
+- Run `python analyze_conditions_and_buoy_lags.py` to generate quick buoy-lag and operational condition summaries.

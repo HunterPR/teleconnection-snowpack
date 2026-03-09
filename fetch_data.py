@@ -63,6 +63,29 @@ def fetch_oni() -> pd.DataFrame:
     return df
 
 
+# ── RONI (Relative Oceanic Niño Index) ─────────────────────────────────────────
+# CPC adopted RONI for ENSO monitoring; same season layout as ONI.
+# https://www.cpc.ncep.noaa.gov/data/indices/RONI.ascii.txt
+
+SEAS_TO_MONTH = {
+    "DJF": 1, "JFM": 2, "FMA": 3, "MAM": 4, "AMJ": 5, "MJJ": 6,
+    "JJA": 7, "JAS": 8, "ASO": 9, "SON": 10, "OND": 11, "NDJ": 12,
+}
+
+
+def fetch_roni() -> pd.DataFrame:
+    url = "https://www.cpc.ncep.noaa.gov/data/indices/RONI.ascii.txt"
+    raw = fetch(url, "RONI (Relative Oceanic Niño Index)")
+    df = pd.read_csv(io.StringIO(raw), delim_whitespace=True)
+    df.columns = df.columns.str.strip()
+    df = df.rename(columns={"YR": "year", "SEAS": "season", "ANOM": "roni"})
+    df["month"] = df["season"].map(SEAS_TO_MONTH)
+    df = df.dropna(subset=["month"]).copy()
+    df["month"] = df["month"].astype(int)
+    df["roni"] = pd.to_numeric(df["roni"], errors="coerce")
+    return df[["year", "month", "roni"]]
+
+
 # ── PDO ───────────────────────────────────────────────────────────────────────
 # NOAA PSL monthly PDO index.
 # Format: first line = "  YYYY YYYY" (year range), then rows of year + 12 values.
@@ -273,6 +296,7 @@ def main():
 
     fetchers = [
         ("oni.csv",          fetch_oni,         "ENSO / ONI"),
+        ("roni.csv",         fetch_roni,        "RONI (Relative Oceanic Niño Index)"),
         ("pdo.csv",          fetch_pdo,         "PDO"),
         ("pna.csv",          fetch_pna,         "PNA"),
         ("ao.csv",           fetch_ao,          "AO"),

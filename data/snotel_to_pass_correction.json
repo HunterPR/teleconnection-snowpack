@@ -1,0 +1,7 @@
+{
+  "slope": 1.0,
+  "intercept": 0.0,
+  "n_obs": 0,
+  "period": "2000-2020",
+  "note": "No Stampede data; correction disabled (use 908 as-is)."
+}

@@ -1,0 +1,99 @@
+{
+  "bottom_line": "Winter 2026 outlook at Snoqualmie Pass:  Current teleconnection pattern is La Ni\u00f1a-like. PDO is -0.92. EPO is +1.36. Model ensemble suggests seasonal totals on the order of 67.7\" SWE and 148.4\" snowfall for the forecast window, driven by the current teleconnection state and lagged predictors. Forecast sits below the historical distribution (low percentile). MJO: sectors 6 (120\u00b0W) and 7 (40\u00b0W) show meaningful influence on Sno Pass; current index6 -0.30; index7 -0.30. Analog years that match the current pattern include [2006, 2021, 1985, 1996, 1955]\u2014use those winters for context and experience-based adjustment. Freezing level currently at 5512' ASL (snow level ~6582'). 8 snowfall hours expected in the next 48h (74 over 120h). 850 hPa flow from 267 deg at 28 mph -> Pacific moisture fetch (favorable for orographic snow).",
+  "human_notes": "",
+  "context": {
+    "target_year": 2026,
+    "generated_at": "2026-03-09T02:11:09.077853Z",
+    "forecast_months": [
+      {
+        "month": "Feb",
+        "wteq_ensemble": 21.5,
+        "snow_ensemble": 43.3,
+        "wteq_pct": 37.5,
+        "snow_pct": 36.8,
+        "wteq_hist_mean": 27.42,
+        "snow_hist_mean": 64.03
+      },
+      {
+        "month": "Mar",
+        "wteq_ensemble": 24.72,
+        "snow_ensemble": 61.67,
+        "wteq_pct": 25.8,
+        "snow_pct": 56.6,
+        "wteq_hist_mean": 38.29,
+        "snow_hist_mean": 62.4
+      },
+      {
+        "month": "Apr",
+        "wteq_ensemble": 21.47,
+        "snow_ensemble": 43.44,
+        "wteq_pct": 6.5,
+        "snow_pct": 80.3,
+        "wteq_hist_mean": 49.35,
+        "snow_hist_mean": 26.14
+      }
+    ],
+    "wteq_season_total": 67.7,
+    "snow_season_total": 148.4,
+    "analog_years": [
+      2006,
+      2021,
+      1985,
+      1996,
+      1955,
+      2017,
+      2023
+    ],
+    "analog_distances": [
+      0.324,
+      0.499,
+      0.582,
+      0.583,
+      0.614,
+      0.659,
+      0.664
+    ],
+    "teleconnection": {
+      "ao": -0.67,
+      "roni": -0.83,
+      "enso34": -0.54,
+      "pdo": -0.92,
+      "pna": 0.21,
+      "nao": 1.25,
+      "epo": 1.36,
+      "nino4_anom": -0.66,
+      "amo": 0.19,
+      "index4_140e_mjo": -0.13,
+      "index6_120w_mjo": -0.3,
+      "index7_40w_mjo": -0.3
+    },
+    "teleconnection_trend": {
+      "roni": -0.14,
+      "enso34": -0.26,
+      "pna": 1.31,
+      "pdo": -1.57,
+      "ao": -0.87
+    },
+    "mjo_note": "MJO sectors 6 (120\u00b0W) and 7 (40\u00b0W) show meaningful influence on Sno Pass snowpack in model feature importance; sector 4 (140\u00b0E) also appears.",
+    "freezing_level": {
+      "current_ft": 5512,
+      "min_48h_ft": 2034,
+      "max_48h_ft": 10007
+    },
+    "snow_level_ft": 6582,
+    "snowfall_hours": {
+      "next_48h": 8,
+      "next_120h": 74
+    },
+    "wind_850": {
+      "mean_dir_deg": 267,
+      "mean_speed_mph": 28
+    },
+    "pressure": {
+      "slp_hpa": 1025.8,
+      "change_12h": 2.7,
+      "pattern": "rising"
+    }
+  },
+  "generated_at": "2026-03-09T02:11:09.077853Z"
+}
